@@ -54,7 +54,7 @@ Merkezdeki `f_ALL` fact tablosu, `PO_Key` ve `PR_Key` üzerinden tüm boyut tabl
 
 ## İş Değeri
 
-- SAP BW üzerinden manuel raporlama ihtiyacını azaltarak raporlama maliyetlerinin düşürülmesine katkı sağladı
+- SAP BW gibi yüksek ücretli raporlama araç ihtiyaçlarını azaltarak raporlama maliyetlerinin düşürülmesine katkı sağladı
 - Satın alma sürecindeki gecikme noktalarının (SAT→SAS, SAS→MG, SAS→FG) görünür hale gelmesini sağladı
 - Tedarikçi/depo bazlı performans karşılaştırmasını tek ekranda mümkün kıldı
 
