@@ -1,27 +1,37 @@
 # SAP Satın Alma Süreç Analizi — Power BI Dashboard
 
+<p align="center">
+  <img src="images/dashboard-genel-bakis.png" width="100%">
+</p>
+
 SAP HANA üzerinden çekilen satın alma verilerini (SAT → SAS → Mal Girişi → Fatura döngüsü) Star Schema veri modeliyle yapılandırıp, uçtan uca süreç görünürlüğü sağlayan Power BI raporu.
+
+---
 
 ## İş Problemi
 
-Satın alma süreci (Satın Alma Talebi → Satın Alma Siparişi → Mal Girişi → Fatura) çok adımlı ve farklı SAP modüllerine (MM, FI) yayılmış durumda. Bu, aşağıdaki soruların yanıtlanmasını zorlaştırıyordu:
+Satın alma süreci (Satın Alma Talebi → Satın Alma Siparişi → Mal Girişi → Fatura) çok adımlı ve farklı SAP modüllerine (MM, FI) yayılmış durumdadır. Bu nedenle aşağıdaki soruların yanıtlanması zorlaşmaktadır:
 
-- Hangi siparişlerde teslimat/faturalama gecikmesi var?
-- Hangi tedarikçiler/depolar performans sorunları yaşıyor?
-- Açık (henüz teslim/faturalanmamış) tutar ne kadar?
+- Hangi siparişlerde teslimat veya faturalama gecikmesi yaşanıyor?
+- Hangi tedarikçi ve depolarda performans sorunları bulunuyor?
+- Henüz teslim alınmamış veya faturalanmamış açık sipariş tutarı ne kadar?
+
+---
 
 ## Veri Mimarisi
 
-SAP HANA Studio üzerinden SAT/SAS/MIRO/MIGO verileri çekilip Python ile batch olarak aktarıldı, ardından Star Schema ile modellendi:
+SAP HANA Studio üzerinden SAT, SAS, MIGO ve MIRO verileri Python ile batch olarak alınmış, ardından Power BI tarafında Star Schema veri modeli oluşturulmuştur.
 
-```
+### Star Schema Yapısı
+
+```text
                     dim_Date
                        │
    d_PurchGroup ───┐   │   ┌─── d_Plant
                     │   │   │
    d_MatGroup  ─────┤   │   ├───── d_Slov
                     │   │   │
-                  f_ALL (fact tablo)
+                      f_ALL
                     │   │   │
    d_Material ──────┤   │   ├───── d_Vendor
                     │   │   │
@@ -29,37 +39,73 @@ SAP HANA Studio üzerinden SAT/SAS/MIRO/MIGO verileri çekilip Python ile batch 
                        d_PO
 ```
 
-Merkezdeki `f_ALL` fact tablosu, `PO_Key` ve `PR_Key` üzerinden tüm boyut tablolarına bağlanıyor — bu yapı, farklı kırılım seviyelerinde (tedarikçi, malzeme grubu, satın alma grubu, şirket) hızlı ve tutarlı analiz yapılmasını sağlıyor.
+Merkezde bulunan **f_ALL** fact tablosu, **PO_Key** ve **PR_Key** anahtarları üzerinden tüm boyut tablolarına bağlanmaktadır. Bu yapı sayesinde tedarikçi, malzeme grubu, satın alma grubu, şirket ve depo bazında yüksek performanslı analizler gerçekleştirilebilmektedir.
+
+### Power BI Semantik Modeli
+
+<p align="center">
+  <img src="images/semantik-model.png" width="95%">
+</p>
+
+---
 
 ## Dashboard Özellikleri
 
-**Genel Bakış Sayfası**
-- Toplam SAS/MG/FG tutarları, teslimat ve faturalama oranları
-- Yıllara göre açık tutar trendi
-- En düşük teslimat performansına sahip tedarikçiler
-- Malzeme / Malzeme Grubu / Şirket kırılımında Top 5 analizleri
-- Depo bazlı çift yönlü açıklık (MG-FG) analizi
+### Genel Bakış Sayfası
 
-**Sipariş Hareket Döngüsü Sayfası**
-- Sipariş bazlı detay: SAT → SAS → Mal Girişi → Fatura zaman çizelgesi
-- Sipariş kalemi seviyesinde açık miktar/tutar takibi
-- SAT→SAS, SAS→MG, SAS→FG gün bazlı süre analizleri
+- Toplam SAS, Mal Girişi ve Fatura tutarları
+- Teslimat ve faturalama oranları
+- Yıllara göre açık sipariş tutarı trendi
+- En düşük teslimat performansına sahip tedarikçiler
+- Malzeme, Malzeme Grubu ve Şirket bazında Top 5 analizleri
+- Depo bazlı açık sipariş analizi
+
+### Dashboard Görünümü
+
+<p align="center">
+  <img src="images/dashboard-genel-bakis.png" width="100%">
+</p>
+
+---
+
+### Sipariş Hareket Döngüsü
+
+- Sipariş bazında SAT → SAS → Mal Girişi → Fatura süreci
+- Sipariş kalemi seviyesinde açık miktar ve tutar takibi
+- SAT→SAS, SAS→MG ve SAS→FG süre analizleri (gün bazında)
+
+<p align="center">
+  <img src="images/siparis-hareket-dongusu.png" width="100%">
+</p>
+
+---
 
 ## Kullanılan Teknolojiler
 
-- **Veri Kaynağı**: SAP HANA (SAT/SAS/MIRO/MIGO tabloları)
-- **ETL**: Python (batch veri aktarımı)
-- **Modelleme**: Star Schema (fact-dimension), Power BI Data Model
-- **Görselleştirme**: Power BI (DAX ölçüleri, drill-through, dinamik filtreler)
+| Katman | Teknoloji |
+|---------|-----------|
+| Veri Kaynağı | SAP HANA |
+| ETL | Python |
+| Veri Modeli | Star Schema |
+| Veri Tabanı | SAP HANA |
+| Görselleştirme | Power BI |
+| Analiz | DAX |
+
+---
 
 ## İş Değeri
 
-- SAP BW gibi yüksek ücretli raporlama araç ihtiyaçlarını azaltarak raporlama maliyetlerinin düşürülmesine katkı sağladı
-- Satın alma sürecindeki gecikme noktalarının (SAT→SAS, SAS→MG, SAS→FG) görünür hale gelmesini sağladı
-- Tedarikçi/depo bazlı performans karşılaştırmasını tek ekranda mümkün kıldı
+- SAP BW gibi yüksek maliyetli raporlama çözümlerine olan ihtiyacın azaltılmasına katkı sağlandı.
+- Satın alma sürecindeki gecikme noktaları (SAT→SAS, SAS→MG, SAS→FG) görünür hale getirildi.
+- Tedarikçi, depo ve şirket bazında performans karşılaştırmaları tek ekranda yapılabilir hale getirildi.
+- Karar vericilerin satın alma süreçlerini daha hızlı analiz edebilmesi sağlandı.
 
-> **Not:** Bu repodaki dashboard'da kullanılan tüm veriler (tedarikçi isimleri, tutarlar, şirket bilgileri) gizlilik nedeniyle anonimleştirilmiştir. Veri modeli ve analiz yaklaşımı gerçek projeyle birebir aynıdır.
+---
 
-## Yazar
+> **Not:** Bu projede kullanılan tedarikçi isimleri, şirket bilgileri ve finansal veriler gizlilik nedeniyle anonimleştirilmiştir. Veri modeli, ETL yaklaşımı ve analiz mantığı gerçek projeyle birebir aynıdır.
 
-Kaan Uysal
+---
+
+## 👨‍💻 Yazar
+
+**Kaan Uysal**
