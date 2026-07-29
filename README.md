@@ -44,7 +44,7 @@ Merkezde bulunan **f_ALL** fact tablosu, **PO_Key** ve **PR_Key** anahtarlarÄ± Ã
 ### Power BI Semantik Modeli
 
 <p align="center">
-  <img src="images/semantik-model.png" width="95%">
+  <img src="images/semantic-model.png" width="95%">
 </p>
 
 ---
