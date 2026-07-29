@@ -106,6 +106,6 @@ Merkezde bulunan **f_ALL** fact tablosu, **PO_Key** ve **PR_Key** anahtarları �
 
 ---
 
-## 👨‍💻 Yazar
 
-**Kaan Uysal**
+Yazar
+Kaan Uysal
